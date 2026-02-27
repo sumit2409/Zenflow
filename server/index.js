@@ -174,11 +174,13 @@ app.post('/api/meta', authMiddleware, async (req,res)=>{
     if (useFileStorage) {
       const fs = require('fs')
       const data = JSON.parse(fs.readFileSync(DATA_FILE,'utf8'))
-      data.meta[req.user] = meta || {}
+      data.meta[req.user] = {...(data.meta[req.user] || {}), ...(meta || {})}
       fs.writeFileSync(DATA_FILE, JSON.stringify(data,null,2),'utf8')
       return res.json({ok:true})
     }
-    await Meta.findOneAndUpdate({user: req.user}, {meta: meta||{}}, {upsert:true}).exec()
+    const existing = await Meta.findOne({user: req.user}).exec()
+    const mergedMeta = {...(existing ? existing.meta : {}), ...(meta || {})}
+    await Meta.findOneAndUpdate({user: req.user}, {meta: mergedMeta}, {upsert:true}).exec()
     res.json({ok:true})
   }catch(e){ console.error(e); res.status(500).json({error:'server error'}) }
 })

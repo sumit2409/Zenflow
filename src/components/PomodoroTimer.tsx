@@ -61,6 +61,7 @@ export default function PomodoroTimer({ user, token, onRequireLogin }: Props) {
       <div className="module-meta">
         <h2>Deep Focus Session</h2>
         <p>Work in focused intervals and take deliberate breaks to stay mentally fresh.</p>
+        <div className="session-reward">Complete a 25-minute block to feed your daily focus ritual.</div>
       </div>
       <div className="timer-display">{formatTime(Math.max(0, seconds))}</div>
       <div className="controls">

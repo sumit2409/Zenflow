@@ -1,0 +1,177 @@
+export type LogEntry = {
+  date: string
+  type: string
+  value: number
+}
+
+export type WellnessMeta = {
+  goal?: number
+  intention?: string
+  rewardCount?: number
+  lastClaimedDate?: string
+}
+
+type Quest = {
+  id: string
+  title: string
+  detail: string
+  progress: number
+  target: number
+  unit: string
+  reward: number
+}
+
+function parseDateKey(key: string) {
+  const [year, month, day] = key.split('-').map(Number)
+  return new Date(year, (month || 1) - 1, day || 1)
+}
+
+export function todayKey(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
+export function getTodayTotals(logs: LogEntry[]) {
+  const today = todayKey()
+  return logs
+    .filter((entry) => entry.date === today)
+    .reduce(
+      (acc, entry) => {
+        acc[entry.type] = (acc[entry.type] || 0) + Number(entry.value || 0)
+        return acc
+      },
+      { steps: 0, pomodoro: 0, meditation: 0 } as Record<string, number>
+    )
+}
+
+export function getTotalPoints(logs: LogEntry[]) {
+  return logs.reduce((sum, entry) => {
+    if (entry.type === 'steps') return sum + Math.round(entry.value / 250)
+    if (entry.type === 'pomodoro') return sum + Math.round(entry.value * 4)
+    if (entry.type === 'meditation') return sum + Math.round(entry.value * 5)
+    return sum
+  }, 0)
+}
+
+export function getLevel(points: number) {
+  const pointsPerLevel = 180
+  const level = Math.max(1, Math.floor(points / pointsPerLevel) + 1)
+  const currentLevelPoints = points % pointsPerLevel
+  const progress = Math.round((currentLevelPoints / pointsPerLevel) * 100)
+  return {
+    level,
+    progress,
+    nextLevelIn: pointsPerLevel - currentLevelPoints,
+  }
+}
+
+export function getCurrentStreak(logs: LogEntry[]) {
+  const activeDays = Array.from(
+    new Set(logs.filter((entry) => entry.value > 0).map((entry) => entry.date))
+  ).sort((a, b) => b.localeCompare(a))
+
+  if (activeDays.length === 0) return 0
+
+  let streak = 0
+  let cursor = parseDateKey(todayKey())
+
+  for (;;) {
+    const key = todayKey(cursor)
+    if (!activeDays.includes(key)) break
+    streak += 1
+    cursor.setDate(cursor.getDate() - 1)
+  }
+
+  return streak
+}
+
+export function getRecentActiveDays(logs: LogEntry[]) {
+  const start = new Date()
+  start.setDate(start.getDate() - 6)
+
+  const days = new Set<string>()
+  logs.forEach((entry) => {
+    if (parseDateKey(entry.date) >= start && entry.value > 0) {
+      days.add(entry.date)
+    }
+  })
+
+  return days.size
+}
+
+export function getQuests(logs: LogEntry[], goal = 8000): Quest[] {
+  const today = getTodayTotals(logs)
+  return [
+    {
+      id: 'focus',
+      title: 'Focus Ritual',
+      detail: 'Complete one deep-work block.',
+      progress: Math.min(today.pomodoro, 25),
+      target: 25,
+      unit: 'min',
+      reward: 80,
+    },
+    {
+      id: 'calm',
+      title: 'Calm Ritual',
+      detail: 'Take a short breathing reset.',
+      progress: Math.min(today.meditation, 5),
+      target: 5,
+      unit: 'min',
+      reward: 60,
+    },
+    {
+      id: 'motion',
+      title: 'Motion Ritual',
+      detail: 'Move enough to wake up the body.',
+      progress: Math.min(today.steps, goal),
+      target: goal,
+      unit: 'steps',
+      reward: 90,
+    },
+  ]
+}
+
+export function allQuestsComplete(quests: Quest[]) {
+  return quests.every((quest) => quest.progress >= quest.target)
+}
+
+export function getAchievements(logs: LogEntry[]) {
+  const totals = logs.reduce(
+    (acc, entry) => {
+      acc[entry.type] = (acc[entry.type] || 0) + Number(entry.value || 0)
+      return acc
+    },
+    { steps: 0, pomodoro: 0, meditation: 0 } as Record<string, number>
+  )
+
+  return [
+    {
+      id: 'lantern',
+      title: 'Lantern Keeper',
+      detail: 'Log 100 focus minutes.',
+      unlocked: totals.pomodoro >= 100,
+    },
+    {
+      id: 'oasis',
+      title: 'Oasis Breath',
+      detail: 'Log 30 meditation minutes.',
+      unlocked: totals.meditation >= 30,
+    },
+    {
+      id: 'trail',
+      title: 'Trail Walker',
+      detail: 'Log 20,000 total steps.',
+      unlocked: totals.steps >= 20000,
+    },
+  ]
+}
+
+export function getRewardTitle(count: number) {
+  const rewards = [
+    'Tea House Glow',
+    'Quiet Garden Pass',
+    'Golden Hour Ribbon',
+    'Moonlight Retreat',
+  ]
+  return rewards[count % rewards.length]
+}

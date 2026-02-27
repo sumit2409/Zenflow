@@ -62,6 +62,7 @@ export default function MeditationTimer({ user, token, onRequireLogin }: Props) 
       <div className="module-meta">
         <h2>Guided Calm Window</h2>
         <p>A soft ambient layer will play while your meditation timer is running.</p>
+        <div className="session-reward">A five-minute reset completes your calm ritual and softens the day.</div>
       </div>
       <div className="timer-display">{format(Math.max(0, seconds))}</div>
       <div className="controls">

@@ -15,16 +15,19 @@ export default function App() {
 
   return (
     <div className="app-root">
-      <header className="app-header">
+      <header className="app-header fade-rise">
         <div className="brand-wrap">
           <div className="brand-dot" aria-hidden />
-          <div className="brand">Zenflow</div>
+          <div>
+            <div className="brand">Zenflow</div>
+            <div className="brand-sub">Sanctuary for focus, breath, and motion</div>
+          </div>
         </div>
         <nav className="nav" aria-label="Main navigation">
           <button className={`nav-link ${selected === null ? 'active' : ''}`} onClick={() => setView(null)}>Dashboard</button>
-          <button className={`nav-link ${selected === 'pomodoro' ? 'active' : ''}`} onClick={() => setView('pomodoro')}>Pomodoro</button>
-          <button className={`nav-link ${selected === 'meditation' ? 'active' : ''}`} onClick={() => setView('meditation')}>Meditation</button>
-          <button className={`nav-link ${selected === 'steps' ? 'active' : ''}`} onClick={() => setView('steps')}>Steps</button>
+          <button className={`nav-link ${selected === 'pomodoro' ? 'active' : ''}`} onClick={() => setView('pomodoro')}>Focus Room</button>
+          <button className={`nav-link ${selected === 'meditation' ? 'active' : ''}`} onClick={() => setView('meditation')}>Calm Room</button>
+          <button className={`nav-link ${selected === 'steps' ? 'active' : ''}`} onClick={() => setView('steps')}>Motion Room</button>
         </nav>
         <div className="auth">
           {user ? (
@@ -40,52 +43,52 @@ export default function App() {
       <main>
         {!selected ? (
           <>
-            <section className="hero">
+            <section className="hero fade-rise">
               <div className="hero-inner">
-                <div>
-                  <div className="eyebrow">Your personal wellness toolkit</div>
-                  <h1>Focus with intensity. Recover with intention.</h1>
-                  <p className="lead">Track effort, build calm, and turn daily routines into measurable momentum you can actually sustain.</p>
+                <div className="hero-copy">
+                  <div className="eyebrow">Psychologically soothing wellness design</div>
+                  <h1>Build a day that feels quieter and more rewarding.</h1>
+                  <p className="lead">A ritual-first workspace inspired by calming wellness products and gentle progression systems, so your effort feels meaningful instead of mechanical.</p>
                   <div className="hero-tags">
-                    <span>Habit tracking</span>
-                    <span>Session history</span>
-                    <span>Simple daily flow</span>
+                    <span>Sanctuary points</span>
+                    <span>Daily rituals</span>
+                    <span>Reward shelf</span>
                   </div>
                 </div>
                 <div className="hero-panel">
                   <div className="hero-stat">
-                    <strong>3</strong>
-                    <span>Core tools</span>
+                    <strong>01</strong>
+                    <span>Set an intention before the day speeds up.</span>
                   </div>
                   <div className="hero-stat">
-                    <strong>1</strong>
-                    <span>Unified dashboard</span>
+                    <strong>02</strong>
+                    <span>Complete focus, calm, and motion rituals for rewards.</span>
                   </div>
                   <div className="hero-stat">
-                    <strong>24/7</strong>
-                    <span>Your pace, your schedule</span>
+                    <strong>03</strong>
+                    <span>Watch points and streaks grow without aggressive pressure.</span>
                   </div>
                 </div>
               </div>
             </section>
             <Dashboard onSelect={(id: string) => setView(id)} user={user} token={token} />
-            <section className="detail-strip">
+            <section className="detail-strip fade-rise">
               <article className="detail-card">
-                <h3>Focus Protocol</h3>
-                <p>Run 25-minute deep-work sessions, then take 5-minute resets to avoid burnout and stay sharp for longer blocks.</p>
+                <h3>Ritual pacing</h3>
+                <p>Every tool is framed as a room, not a task list, so the UI feels restorative instead of punitive.</p>
               </article>
               <article className="detail-card">
-                <h3>Recovery Layer</h3>
-                <p>Use short meditation windows between tasks to reset your nervous system and improve concentration quality.</p>
+                <h3>Reward psychology</h3>
+                <p>Points, levels, streaks, and symbolic unlocks create momentum while keeping the emotional tone soft.</p>
               </article>
               <article className="detail-card">
-                <h3>Movement Baseline</h3>
-                <p>Keep daily steps visible so your physical energy supports your cognitive output throughout the day.</p>
+                <h3>Reflective design</h3>
+                <p>Intentions, calmer copy, and ambient visuals make the experience feel more like a retreat than a dashboard.</p>
               </article>
             </section>
           </>
         ) : (
-          <section className="focus-card">
+          <section className="focus-card fade-rise">
             <button className="back" onClick={() => setView(null)}>&lt; Back to dashboard</button>
             {selected === 'pomodoro' && <PomodoroTimer user={user} token={token} onRequireLogin={() => setShowLogin(true)} />}
             {selected === 'meditation' && <MeditationTimer user={user} token={token} onRequireLogin={() => setShowLogin(true)} />}
