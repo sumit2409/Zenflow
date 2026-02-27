@@ -39,7 +39,7 @@ export function getTodayTotals(logs: LogEntry[]) {
         acc[entry.type] = (acc[entry.type] || 0) + Number(entry.value || 0)
         return acc
       },
-      { steps: 0, pomodoro: 0, meditation: 0 } as Record<string, number>
+      { steps: 0, pomodoro: 0, meditation: 0, sudoku: 0 } as Record<string, number>
     )
 }
 
@@ -48,6 +48,7 @@ export function getTotalPoints(logs: LogEntry[]) {
     if (entry.type === 'steps') return sum + Math.round(entry.value / 250)
     if (entry.type === 'pomodoro') return sum + Math.round(entry.value * 4)
     if (entry.type === 'meditation') return sum + Math.round(entry.value * 5)
+    if (entry.type === 'sudoku') return sum + Math.round(entry.value * 70)
     return sum
   }, 0)
 }
@@ -128,6 +129,15 @@ export function getQuests(logs: LogEntry[], goal = 8000): Quest[] {
       unit: 'steps',
       reward: 90,
     },
+    {
+      id: 'mind',
+      title: 'Mind Ritual',
+      detail: 'Solve one Sudoku grid to sharpen pattern memory.',
+      progress: Math.min(today.sudoku, 1),
+      target: 1,
+      unit: 'puzzle',
+      reward: 70,
+    },
   ]
 }
 
@@ -141,7 +151,7 @@ export function getAchievements(logs: LogEntry[]) {
       acc[entry.type] = (acc[entry.type] || 0) + Number(entry.value || 0)
       return acc
     },
-    { steps: 0, pomodoro: 0, meditation: 0 } as Record<string, number>
+    { steps: 0, pomodoro: 0, meditation: 0, sudoku: 0 } as Record<string, number>
   )
 
   return [
@@ -162,6 +172,12 @@ export function getAchievements(logs: LogEntry[]) {
       title: 'Trail Walker',
       detail: 'Log 20,000 total steps.',
       unlocked: totals.steps >= 20000,
+    },
+    {
+      id: 'mindsmith',
+      title: 'Mindsmith',
+      detail: 'Solve 5 Sudoku puzzles.',
+      unlocked: totals.sudoku >= 5,
     },
   ]
 }

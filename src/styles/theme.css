@@ -797,6 +797,9 @@ input[type='number']:focus {
 }
 
 input[type='number'],
+input[type='date'],
+.todo-entry input,
+.profile-grid input,
 .login-form input {
   width: 100%;
   padding: 12px 14px;
@@ -851,10 +854,122 @@ input[type='number'],
   margin-top: 16px;
 }
 
+.sudoku-shell,
+.profile-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 18px;
+}
+
+.sudoku-board {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 2px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(255, 252, 249, 0.92);
+  box-shadow: var(--shadow);
+}
+
+.sudoku-cell {
+  aspect-ratio: 1;
+  width: 100%;
+  text-align: center;
+  border: 1px solid rgba(79, 58, 41, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.sudoku-cell.locked {
+  background: rgba(240, 223, 204, 0.7);
+  color: #7b5534;
+}
+
+.sudoku-cell:nth-child(3n) {
+  margin-right: 3px;
+}
+
+.sudoku-side h3,
+.profile-card h3,
+.journal-card h3,
+.todo-card h3 {
+  margin-top: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px;
+}
+
+.sudoku-stats {
+  margin-bottom: 14px;
+}
+
+.profile-layout {
+  grid-template-columns: 0.85fr 1.1fr;
+  align-items: start;
+}
+
+.profile-card,
+.journal-card,
+.todo-card {
+  padding: 18px;
+}
+
+.profile-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-grid label,
+.goal label {
+  display: grid;
+  gap: 8px;
+}
+
+.journal-input {
+  min-height: 240px;
+}
+
+.todo-card {
+  grid-column: 1 / -1;
+}
+
+.todo-entry {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.todo-list {
+  display: grid;
+  gap: 10px;
+}
+
+.todo-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.todo-item.done span {
+  color: var(--ink-soft);
+  text-decoration: line-through;
+}
+
 @media (max-width: 1000px) {
   .hero-inner,
   .overview-grid,
   .quest-grid,
+  .sudoku-shell,
+  .profile-layout,
   .feature-grid,
   .detail-strip {
     grid-template-columns: 1fr;
@@ -926,10 +1041,21 @@ input[type='number'],
     grid-template-columns: 1fr;
   }
 
+  .sudoku-board {
+    padding: 10px;
+    border-radius: 20px;
+  }
+
+  .sudoku-cell {
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
   .quest-row,
   .feature-card,
   .section-heading,
-  .intention-actions {
+  .intention-actions,
+  .todo-item {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -959,6 +1085,10 @@ input[type='number'],
   .controls button {
     flex: 1 1 calc(50% - 8px);
     min-width: 130px;
+  }
+
+  .todo-entry {
+    grid-template-columns: 1fr;
   }
 
   .ghost-btn,

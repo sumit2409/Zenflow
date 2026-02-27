@@ -51,6 +51,20 @@ const features = [
     sigil: 'MO',
     reward: '+90 ritual points',
   },
+  {
+    id: 'sudoku',
+    title: 'Mind Puzzle Room',
+    desc: 'Daily Sudoku to sharpen concentration and interrupt passive scrolling habits.',
+    sigil: 'IQ',
+    reward: '+70 ritual points',
+  },
+  {
+    id: 'profile',
+    title: 'Profile and Journal',
+    desc: 'Store your body profile, journal the day, and tick off the tasks that matter.',
+    sigil: 'PR',
+    reward: 'Reflection and planning',
+  },
 ]
 
 const chartOptions = {
@@ -117,7 +131,7 @@ export default function Dashboard({ onSelect, user, token }: Props) {
   const totalPoints = useMemo(() => getTotalPoints(logs), [logs])
   const level = useMemo(() => getLevel(totalPoints), [totalPoints])
   const today = useMemo(() => getTodayTotals(logs), [logs])
-  const todayPoints = Math.round(today.steps / 250 + today.pomodoro * 4 + today.meditation * 5)
+  const todayPoints = Math.round(today.steps / 250 + today.pomodoro * 4 + today.meditation * 5 + today.sudoku * 70)
   const streak = useMemo(() => getCurrentStreak(logs), [logs])
   const recentDays = useMemo(() => getRecentActiveDays(logs), [logs])
   const quests = useMemo(() => getQuests(logs, goal), [logs, goal])
@@ -298,6 +312,7 @@ export default function Dashboard({ onSelect, user, token }: Props) {
               <span>{today.pomodoro} focus min</span>
               <span>{today.meditation} meditation min</span>
               <span>{today.steps} steps</span>
+              <span>{today.sudoku} puzzles</span>
             </div>
           </div>
           {user && logs.length > 0 ? (
@@ -313,6 +328,10 @@ export default function Dashboard({ onSelect, user, token }: Props) {
               <div className="chart-block">
                 <div className="chart-label">Steps</div>
                 <Line options={chartOptions} data={buildData('steps', '#d4a373')} />
+              </div>
+              <div className="chart-block">
+                <div className="chart-label">Sudoku</div>
+                <Line options={chartOptions} data={buildData('sudoku', '#8b6f9b')} />
               </div>
             </div>
           ) : (
