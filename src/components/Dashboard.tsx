@@ -22,8 +22,8 @@ import {
   getTotalPoints,
   todayKey,
   type LogEntry,
-  type WellnessMeta,
 } from '../utils/wellness'
+import { type ProfileMeta } from '../utils/profile'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -45,13 +45,6 @@ const features = [
     reward: '+60 ritual points',
   },
   {
-    id: 'steps',
-    title: 'Motion Room',
-    desc: 'Daily movement tracking that keeps energy and mood from going flat.',
-    sigil: 'MO',
-    reward: '+90 ritual points',
-  },
-  {
     id: 'sudoku',
     title: 'Mind Puzzle Room',
     desc: 'Daily Sudoku to sharpen concentration and interrupt passive scrolling habits.',
@@ -64,6 +57,13 @@ const features = [
     desc: 'Store your body profile, journal the day, and tick off the tasks that matter.',
     sigil: 'PR',
     reward: 'Reflection and planning',
+  },
+  {
+    id: 'arcade',
+    title: 'Brain Arcade',
+    desc: 'Short memory and reaction games that wake your attention back up.',
+    sigil: 'AR',
+    reward: '+55 ritual points',
   },
 ]
 
@@ -88,7 +88,7 @@ const chartOptions = {
 
 export default function Dashboard({ onSelect, user, token }: Props) {
   const [logs, setLogs] = useState<LogEntry[]>([])
-  const [meta, setMeta] = useState<WellnessMeta>({})
+  const [meta, setMeta] = useState<ProfileMeta>({})
   const [intentionDraft, setIntentionDraft] = useState('')
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle')
 
@@ -127,17 +127,18 @@ export default function Dashboard({ onSelect, user, token }: Props) {
     setIntentionDraft(meta.intention || '')
   }, [meta.intention])
 
-  const goal = Number(meta.goal) || 8000
   const totalPoints = useMemo(() => getTotalPoints(logs), [logs])
   const level = useMemo(() => getLevel(totalPoints), [totalPoints])
   const today = useMemo(() => getTodayTotals(logs), [logs])
-  const todayPoints = Math.round(today.steps / 250 + today.pomodoro * 4 + today.meditation * 5 + today.sudoku * 70)
+  const todayPoints = Math.round(today.pomodoro * 4 + today.meditation * 5 + today.sudoku * 70 + today.memory * 55 + today.reaction * 55)
   const streak = useMemo(() => getCurrentStreak(logs), [logs])
   const recentDays = useMemo(() => getRecentActiveDays(logs), [logs])
-  const quests = useMemo(() => getQuests(logs, goal), [logs, goal])
+  const quests = useMemo(() => getQuests(logs), [logs])
   const achievements = useMemo(() => getAchievements(logs), [logs])
   const rewardCount = meta.rewardCount || 0
   const rewardReady = Boolean(user && allQuestsComplete(quests) && meta.lastClaimedDate !== todayKey())
+  const todaysTasks = meta.todosByDate?.[todayKey()] || []
+  const completedTasks = todaysTasks.filter((task) => task.done).length
 
   async function persistMeta(partial: WellnessMeta) {
     setMeta(prev => ({ ...prev, ...partial }))
@@ -301,6 +302,67 @@ export default function Dashboard({ onSelect, user, token }: Props) {
         </article>
       </section>
 
+      <section className="quest-grid">
+        <article className="quest-board card fade-rise">
+          <div className="section-heading">
+            <div>
+              <div className="section-kicker">Today&apos;s Tasks</div>
+              <h3>Your focus queue</h3>
+            </div>
+            <button className="ghost-btn" onClick={() => onSelect('profile')}>Edit tasks</button>
+          </div>
+          {todaysTasks.length > 0 ? (
+            <div className="todo-list compact">
+              {todaysTasks.slice(0, 5).map((task) => (
+                <div key={task.id} className={`todo-item dashboard ${task.done ? 'done' : ''}`}>
+                  <span>{task.text}</span>
+                  <div className="task-meta-chip">{task.done ? 'Done' : `${task.focusCount || 0} focus blocks`}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-panel">
+              <h4>No focus queue yet</h4>
+              <p>Add tasks in your profile room, then attach them to Pomodoro sessions so work and reflection stay connected.</p>
+            </div>
+          )}
+          <div className="mini-stats">
+            <div>
+              <strong>{completedTasks}</strong>
+              <span>done today</span>
+            </div>
+            <div>
+              <strong>{todaysTasks.length - completedTasks}</strong>
+              <span>still open</span>
+            </div>
+            <div>
+              <strong>{todaysTasks.length}</strong>
+              <span>total tasks</span>
+            </div>
+          </div>
+        </article>
+
+        <article className="reward-card card fade-rise">
+          <div className="section-kicker">Brain Rot Remedy</div>
+          <h3>Fast resets that fight drift</h3>
+          <p>When your attention starts leaking into doomscrolling, use a game or puzzle to pull it back into active cognition.</p>
+          <div className="achievement-list">
+            <div className="achievement-pill unlocked">
+              <strong>Focus tasks + timer</strong>
+              <span>Attach a task to a focus block so output feels concrete.</span>
+            </div>
+            <div className="achievement-pill unlocked">
+              <strong>Sudoku + arcade</strong>
+              <span>Use pattern recall and reaction games as short cognitive resets.</span>
+            </div>
+          </div>
+          <div className="controls">
+            <button onClick={() => onSelect('pomodoro')}>Open focus room</button>
+            <button onClick={() => onSelect('arcade')}>Open arcade</button>
+          </div>
+        </article>
+      </section>
+
       <section className="history-layout">
         <article className="history-card card fade-rise">
           <div className="section-heading">
@@ -311,8 +373,8 @@ export default function Dashboard({ onSelect, user, token }: Props) {
             <div className="today-summary">
               <span>{today.pomodoro} focus min</span>
               <span>{today.meditation} meditation min</span>
-              <span>{today.steps} steps</span>
               <span>{today.sudoku} puzzles</span>
+              <span>{today.memory + today.reaction} game wins</span>
             </div>
           </div>
           {user && logs.length > 0 ? (
@@ -326,18 +388,18 @@ export default function Dashboard({ onSelect, user, token }: Props) {
                 <Line options={chartOptions} data={buildData('meditation', '#6b8f71')} />
               </div>
               <div className="chart-block">
-                <div className="chart-label">Steps</div>
-                <Line options={chartOptions} data={buildData('steps', '#d4a373')} />
-              </div>
-              <div className="chart-block">
                 <div className="chart-label">Sudoku</div>
                 <Line options={chartOptions} data={buildData('sudoku', '#8b6f9b')} />
+              </div>
+              <div className="chart-block">
+                <div className="chart-label">Brain Arcade</div>
+                <Line options={chartOptions} data={buildData('memory', '#d4a373')} />
               </div>
             </div>
           ) : (
             <div className="empty-panel">
               <h4>No rhythm logged yet</h4>
-              <p>Finish one focus block, one breathing session, or update your steps to start building your sanctuary history.</p>
+              <p>Finish one focus block, one breathing session, or beat a brain game to start building your sanctuary history.</p>
             </div>
           )}
         </article>

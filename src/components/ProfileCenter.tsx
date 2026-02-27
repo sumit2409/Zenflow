@@ -1,23 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { todayKey, type WellnessMeta } from '../utils/wellness'
-
-type TodoItem = {
-  id: string
-  text: string
-  done: boolean
-}
+import { todayKey } from '../utils/wellness'
+import { type ProfileMeta, type TodoItem } from '../utils/profile'
 
 type Props = { user: string | null; token?: string | null; onRequireLogin?: () => void }
-
-type ProfileMeta = WellnessMeta & {
-  profile?: {
-    heightCm?: string
-    weightKg?: string
-    dateOfBirth?: string
-  }
-  journals?: Record<string, string>
-  todosByDate?: Record<string, TodoItem[]>
-}
 
 export default function ProfileCenter({ user, token, onRequireLogin }: Props) {
   const today = todayKey()
@@ -189,7 +174,10 @@ export default function ProfileCenter({ user, token, onRequireLogin }: Props) {
               todos.map((todo) => (
                 <label key={todo.id} className={`todo-item ${todo.done ? 'done' : ''}`}>
                   <input type="checkbox" checked={todo.done} onChange={() => toggleTodo(todo.id)} />
-                  <span>{todo.text}</span>
+                  <div>
+                    <span>{todo.text}</span>
+                    <div className="muted">Focus blocks logged: {todo.focusCount || 0}</div>
+                  </div>
                   <button className="ghost-btn" onClick={() => removeTodo(todo.id)}>Remove</button>
                 </label>
               ))

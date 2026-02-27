@@ -70,6 +70,10 @@ textarea {
   font: inherit;
 }
 
+select {
+  font: inherit;
+}
+
 .app-root {
   position: relative;
   max-width: 1180px;
@@ -800,6 +804,7 @@ input[type='number'],
 input[type='date'],
 .todo-entry input,
 .profile-grid input,
+.task-picker select,
 .login-form input {
   width: 100%;
   padding: 12px 14px;
@@ -964,11 +969,101 @@ input[type='date'],
   text-decoration: line-through;
 }
 
+.todo-list.compact {
+  margin-bottom: 12px;
+}
+
+.todo-item.dashboard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.task-meta-chip {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: var(--amber-soft);
+  color: #7b5534;
+  font-size: 12px;
+}
+
+.focus-task-panel {
+  margin-bottom: 18px;
+  padding: 16px;
+}
+
+.task-picker {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.task-mini-list {
+  display: grid;
+  gap: 10px;
+}
+
+.arcade-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.arcade-card {
+  padding: 18px;
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.memory-card {
+  aspect-ratio: 1;
+  border-radius: 22px;
+  font-size: 28px;
+  background: linear-gradient(145deg, rgba(125, 149, 119, 0.16), rgba(215, 163, 109, 0.14));
+}
+
+.memory-card.revealed {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.reaction-stage {
+  display: grid;
+  gap: 10px;
+  min-height: 220px;
+  place-items: center;
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(255, 252, 249, 0.74);
+  text-align: center;
+}
+
+.reaction-stage strong {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 40px;
+}
+
+.reaction-stage.waiting {
+  background: rgba(240, 223, 204, 0.76);
+}
+
+.reaction-stage.go {
+  background: rgba(125, 149, 119, 0.24);
+}
+
 @media (max-width: 1000px) {
   .hero-inner,
   .overview-grid,
   .quest-grid,
   .sudoku-shell,
+  .arcade-layout,
   .profile-layout,
   .feature-grid,
   .detail-strip {
@@ -1085,6 +1180,10 @@ input[type='date'],
   .controls button {
     flex: 1 1 calc(50% - 8px);
     min-width: 130px;
+  }
+
+  .memory-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .todo-entry {

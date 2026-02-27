@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import Dashboard from './components/Dashboard'
 import PomodoroTimer from './components/PomodoroTimer'
 import MeditationTimer from './components/MeditationTimer'
-import StepsTracker from './components/StepsTracker'
 import Login from './components/Login'
 import SudokuTrainer from './components/SudokuTrainer'
 import ProfileCenter from './components/ProfileCenter'
+import BrainArcade from './components/BrainArcade'
 
 export default function App() {
   const [selected, setSelected] = useState<string | null>(null)
@@ -29,8 +29,8 @@ export default function App() {
           <button className={`nav-link ${selected === null ? 'active' : ''}`} onClick={() => setView(null)}>Dashboard</button>
           <button className={`nav-link ${selected === 'pomodoro' ? 'active' : ''}`} onClick={() => setView('pomodoro')}>Focus Room</button>
           <button className={`nav-link ${selected === 'meditation' ? 'active' : ''}`} onClick={() => setView('meditation')}>Calm Room</button>
-          <button className={`nav-link ${selected === 'steps' ? 'active' : ''}`} onClick={() => setView('steps')}>Motion Room</button>
           <button className={`nav-link ${selected === 'sudoku' ? 'active' : ''}`} onClick={() => setView('sudoku')}>Mind Puzzle</button>
+          <button className={`nav-link ${selected === 'arcade' ? 'active' : ''}`} onClick={() => setView('arcade')}>Arcade</button>
           <button className={`nav-link ${selected === 'profile' ? 'active' : ''}`} onClick={() => setView('profile')}>Profile</button>
         </nav>
         <div className="auth">
@@ -96,8 +96,8 @@ export default function App() {
             <button className="back" onClick={() => setView(null)}>&lt; Back to dashboard</button>
             {selected === 'pomodoro' && <PomodoroTimer user={user} token={token} onRequireLogin={() => setShowLogin(true)} />}
             {selected === 'meditation' && <MeditationTimer user={user} token={token} onRequireLogin={() => setShowLogin(true)} />}
-            {selected === 'steps' && <StepsTracker user={user} token={token} onRequireLogin={() => setShowLogin(true)} />}
             {selected === 'sudoku' && <SudokuTrainer user={user} token={token} onRequireLogin={() => setShowLogin(true)} />}
+            {selected === 'arcade' && <BrainArcade user={user} token={token} onRequireLogin={() => setShowLogin(true)} />}
             {selected === 'profile' && <ProfileCenter user={user} token={token} onRequireLogin={() => setShowLogin(true)} />}
           </section>
         )}

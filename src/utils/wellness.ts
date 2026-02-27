@@ -39,16 +39,18 @@ export function getTodayTotals(logs: LogEntry[]) {
         acc[entry.type] = (acc[entry.type] || 0) + Number(entry.value || 0)
         return acc
       },
-      { steps: 0, pomodoro: 0, meditation: 0, sudoku: 0 } as Record<string, number>
+      { pomodoro: 0, meditation: 0, sudoku: 0, memory: 0, reaction: 0, steps: 0 } as Record<string, number>
     )
 }
 
 export function getTotalPoints(logs: LogEntry[]) {
   return logs.reduce((sum, entry) => {
-    if (entry.type === 'steps') return sum + Math.round(entry.value / 250)
     if (entry.type === 'pomodoro') return sum + Math.round(entry.value * 4)
     if (entry.type === 'meditation') return sum + Math.round(entry.value * 5)
     if (entry.type === 'sudoku') return sum + Math.round(entry.value * 70)
+    if (entry.type === 'memory') return sum + Math.round(entry.value * 55)
+    if (entry.type === 'reaction') return sum + Math.round(entry.value * 55)
+    if (entry.type === 'steps') return sum + Math.round(entry.value / 250)
     return sum
   }, 0)
 }
@@ -99,7 +101,7 @@ export function getRecentActiveDays(logs: LogEntry[]) {
   return days.size
 }
 
-export function getQuests(logs: LogEntry[], goal = 8000): Quest[] {
+export function getQuests(logs: LogEntry[], goal = 8000) {
   const today = getTodayTotals(logs)
   return [
     {
@@ -121,15 +123,6 @@ export function getQuests(logs: LogEntry[], goal = 8000): Quest[] {
       reward: 60,
     },
     {
-      id: 'motion',
-      title: 'Motion Ritual',
-      detail: 'Move enough to wake up the body.',
-      progress: Math.min(today.steps, goal),
-      target: goal,
-      unit: 'steps',
-      reward: 90,
-    },
-    {
       id: 'mind',
       title: 'Mind Ritual',
       detail: 'Solve one Sudoku grid to sharpen pattern memory.',
@@ -137,6 +130,15 @@ export function getQuests(logs: LogEntry[], goal = 8000): Quest[] {
       target: 1,
       unit: 'puzzle',
       reward: 70,
+    },
+    {
+      id: 'arcade',
+      title: 'Arcade Ritual',
+      detail: 'Complete one memory or reaction reset.',
+      progress: Math.min(today.memory + today.reaction, 1),
+      target: 1,
+      unit: 'game',
+      reward: 55,
     },
   ]
 }
@@ -151,7 +153,7 @@ export function getAchievements(logs: LogEntry[]) {
       acc[entry.type] = (acc[entry.type] || 0) + Number(entry.value || 0)
       return acc
     },
-    { steps: 0, pomodoro: 0, meditation: 0, sudoku: 0 } as Record<string, number>
+    { steps: 0, pomodoro: 0, meditation: 0, sudoku: 0, memory: 0, reaction: 0 } as Record<string, number>
   )
 
   return [
@@ -168,16 +170,16 @@ export function getAchievements(logs: LogEntry[]) {
       unlocked: totals.meditation >= 30,
     },
     {
-      id: 'trail',
-      title: 'Trail Walker',
-      detail: 'Log 20,000 total steps.',
-      unlocked: totals.steps >= 20000,
-    },
-    {
       id: 'mindsmith',
       title: 'Mindsmith',
       detail: 'Solve 5 Sudoku puzzles.',
       unlocked: totals.sudoku >= 5,
+    },
+    {
+      id: 'spark',
+      title: 'Synapse Spark',
+      detail: 'Complete 10 brain arcade rounds.',
+      unlocked: totals.memory + totals.reaction >= 10,
     },
   ]
 }
