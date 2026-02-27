@@ -4,11 +4,9 @@ services:
     runtime: node
     plan: free
     autoDeploy: true
-    buildCommand: npm install && npm --prefix server install && npm run build
-    startCommand: node server/index.js
+    buildCommand: npm install --include=dev && npm --prefix server install && npm run build
+    startCommand: NODE_ENV=production node server/index.js
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: ZENFLOW_SECRET
         generateValue: true
       - key: MONGODB_URI
