@@ -90,6 +90,43 @@ Security notes:
 - The server uses JWTs; set `ZENFLOW_SECRET` to a secure secret in production.
 - For production, use TLS/HTTPS and a managed database (Atlas, AWS DocumentDB, etc.).
 
+## Deploy Fullstack Online (Free)
+
+This repo is now configured for Render via `render.yaml`.
+
+### 1. Create free MongoDB Atlas database
+
+1. Create an Atlas M0 cluster.
+2. Create a database user and password.
+3. In Network Access, allow the Render IP (or temporarily `0.0.0.0/0`).
+4. Copy your connection string, for example:
+
+```text
+mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/zenflow?retryWrites=true&w=majority
+```
+
+### 2. Deploy on Render
+
+1. Open Render dashboard.
+2. Click `New` -> `Blueprint`.
+3. Connect this GitHub repo (`sumit2409/Zenflow`).
+4. Render reads `render.yaml` and creates the `zenflow` web service.
+5. Add environment variable `MONGODB_URI` with your Atlas connection string.
+6. Deploy.
+
+Render will:
+- install root + server dependencies
+- build frontend (`dist`)
+- run `node server/index.js`
+- serve both frontend and `/api/*` from one URL
+
+### 3. Verify
+
+1. Open your Render URL.
+2. Register a user.
+3. Start/complete Pomodoro/Meditation and update Steps.
+4. Reload page and confirm history persists (proves DB is connected).
+
 ## Future Plans
 
 - Implement user authentication to allow personalized experiences.
