@@ -1,0 +1,22 @@
+{
+  "users": {
+    "cliuser2": {
+      "password": "$2a$08$7RD6yzw9Xn9jXDmaiuh.suR1EUEiZpli7GNMppa/BtCihQjFzAhj.",
+      "created": 1772203884624
+    },
+    "dfgftcgh": {
+      "password": "$2a$08$UXFmnrTmcTgJGXKFymN.IOgbIic.vbasvf83njYnLUXCh0/gNPfNa",
+      "created": 1772203939531
+    },
+    "sumit": {
+      "password": "$2a$08$5pGQCi2.kQxNQjB8qblkwup9HtP.bn7ZigmS6bZXrHbNHqJt7Uvnm",
+      "created": 1772205044753
+    }
+  },
+  "logs": {
+    "sumit": {
+      "2026-02-27": 0
+    }
+  },
+  "meta": {}
+}

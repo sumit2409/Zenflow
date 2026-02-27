@@ -1,0 +1,36 @@
+{
+  "name": "zenflow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zenflow — wellness dashboard with Pomodoro, meditation, and steps tracker",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite",
+    "server": "node server/index.js"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "esbuild": "^0.27.3",
+    "typescript": "^5.0.0",
+    "vite": "^7.3.1"
+  },
+  "keywords": [
+    "wellness",
+    "productivity",
+    "pomodoro",
+    "meditation",
+    "steps tracker"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
