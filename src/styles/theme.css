@@ -30,6 +30,7 @@ body {
   margin: 0;
   color: var(--ink);
   font-family: 'Manrope', sans-serif;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at top left, rgba(215, 163, 109, 0.22), transparent 28%),
     radial-gradient(circle at 85% 12%, rgba(125, 149, 119, 0.18), transparent 26%),
@@ -41,10 +42,26 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(circle at center, black, transparent 80%);
   opacity: 0.25;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  right: -120px;
+  bottom: -120px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(125, 149, 119, 0.16), transparent 65%);
+  filter: blur(10px);
+  animation: driftOrb 18s ease-in-out infinite;
 }
 
 button,
@@ -54,6 +71,7 @@ textarea {
 }
 
 .app-root {
+  position: relative;
   max-width: 1180px;
   margin: 0 auto;
   padding: 22px 18px 56px;
@@ -151,6 +169,26 @@ button:hover {
   animation: fadeRise 0.7s ease both;
 }
 
+.feature-grid > :nth-child(1),
+.overview-grid > :nth-child(1),
+.quest-grid > :nth-child(1),
+.detail-strip > :nth-child(1) {
+  animation-delay: 0.04s;
+}
+
+.feature-grid > :nth-child(2),
+.overview-grid > :nth-child(2),
+.quest-grid > :nth-child(2),
+.detail-strip > :nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.feature-grid > :nth-child(3),
+.overview-grid > :nth-child(3),
+.detail-strip > :nth-child(3) {
+  animation-delay: 0.2s;
+}
+
 @keyframes fadeRise {
   from {
     opacity: 0;
@@ -162,11 +200,52 @@ button:hover {
   }
 }
 
+@keyframes driftOrb {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-18px, -22px, 0);
+  }
+}
+
+@keyframes floatCard {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes sheen {
+  0% {
+    transform: translateX(-130%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(170%) skewX(-18deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(215, 163, 109, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(215, 163, 109, 0);
+  }
+}
+
 .hero {
   margin-bottom: 24px;
 }
 
 .hero-inner {
+  position: relative;
+  overflow: hidden;
   display: grid;
   grid-template-columns: 1.3fr 0.9fr;
   gap: 18px;
@@ -177,6 +256,33 @@ button:hover {
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.66), transparent 30%),
     linear-gradient(145deg, rgba(255, 246, 236, 0.96), rgba(238, 225, 208, 0.9));
   box-shadow: var(--shadow);
+}
+
+.hero-inner::before,
+.hero-inner::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(6px);
+}
+
+.hero-inner::before {
+  top: -70px;
+  right: -50px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(215, 163, 109, 0.22), transparent 68%);
+  animation: driftOrb 14s ease-in-out infinite;
+}
+
+.hero-inner::after {
+  left: -80px;
+  bottom: -90px;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(125, 149, 119, 0.16), transparent 70%);
+  animation: driftOrb 16s ease-in-out infinite reverse;
 }
 
 .hero-copy h1,
@@ -246,6 +352,16 @@ button:hover {
   font-size: 12px;
 }
 
+.hero-tags span,
+.story-ribbon span,
+.today-summary span {
+  backdrop-filter: blur(8px);
+}
+
+.reward-badge {
+  animation: pulseGlow 2.8s ease-in-out infinite;
+}
+
 .hero-panel {
   display: grid;
   gap: 12px;
@@ -258,6 +374,8 @@ button:hover {
 .quest-row,
 .chart-block,
 .empty-panel {
+  position: relative;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 22px;
   background: rgba(255, 252, 249, 0.78);
@@ -265,6 +383,43 @@ button:hover {
 
 .hero-stat {
   padding: 18px;
+  animation: floatCard 7s ease-in-out infinite;
+}
+
+.hero-stat:nth-child(2) {
+  animation-delay: 0.8s;
+}
+
+.hero-stat:nth-child(3) {
+  animation-delay: 1.6s;
+}
+
+.hero-stat::after,
+.feature-card::after,
+.quest-row::after,
+.detail-card::after,
+.achievement-pill::after,
+.chart-block::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 35%;
+  height: 100%;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: translateX(-130%) skewX(-18deg);
+  pointer-events: none;
+}
+
+.hero-stat:hover::after,
+.feature-card:hover::after,
+.quest-row:hover::after,
+.detail-card:hover::after,
+.achievement-pill:hover::after,
+.chart-block:hover::after {
+  opacity: 1;
+  animation: sheen 0.9s ease;
 }
 
 .hero-stat strong {
@@ -291,6 +446,16 @@ button:hover {
   border-radius: 30px;
   background: var(--card);
   box-shadow: var(--shadow);
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.card:hover,
+.focus-card:hover,
+.login-card:hover,
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 26px 80px rgba(77, 49, 31, 0.15);
+  border-color: rgba(125, 149, 119, 0.22);
 }
 
 .sanctuary-shell,
@@ -320,6 +485,21 @@ button:hover {
 .focus-card,
 .login-card {
   padding: 22px;
+}
+
+.reward-card {
+  position: relative;
+}
+
+.reward-card::before {
+  content: '';
+  position: absolute;
+  inset: auto -40px -70px auto;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(215, 163, 109, 0.16), transparent 70%);
+  pointer-events: none;
 }
 
 .sanctuary-story h2 {
@@ -369,6 +549,15 @@ button:hover {
   inset: 0 auto 0 0;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--sage), var(--amber));
+  overflow: hidden;
+}
+
+.progress-rail span::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: sheen 2.6s linear infinite;
 }
 
 .progress-rail.small {
@@ -498,6 +687,7 @@ input[type='number']:focus {
 
 .feature-card {
   position: relative;
+  overflow: hidden;
   text-align: left;
   gap: 16px;
   padding: 18px;
@@ -674,11 +864,15 @@ input[type='number'],
     position: static;
     flex-wrap: wrap;
   }
+
+  .hero-copy h1 {
+    max-width: 12ch;
+  }
 }
 
 @media (max-width: 720px) {
   .app-root {
-    padding: 12px 12px 40px;
+    padding: 10px 10px 92px;
   }
 
   .app-header,
@@ -693,6 +887,32 @@ input[type='number'],
   .login-card {
     padding: 18px;
     border-radius: 24px;
+  }
+
+  .app-header {
+    gap: 14px;
+  }
+
+  .nav {
+    order: 3;
+    width: calc(100% + 4px);
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin: 0 -2px -2px;
+    scroll-snap-type: x proximity;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-link {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    white-space: nowrap;
   }
 
   .auth {
@@ -716,5 +936,44 @@ input[type='number'],
 
   .quest-meter {
     width: 100%;
+  }
+
+  .hero-copy h1,
+  .module-meta h2,
+  .sanctuary-story h2 {
+    font-size: clamp(36px, 13vw, 52px);
+  }
+
+  .hero-panel {
+    gap: 10px;
+  }
+
+  .today-summary {
+    width: 100%;
+  }
+
+  .feature-card {
+    gap: 14px;
+  }
+
+  .controls button {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 130px;
+  }
+
+  .ghost-btn,
+  .back {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
   }
 }
