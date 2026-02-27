@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 
 const JWT_SECRET = process.env.ZENFLOW_SECRET || 'dev-secret'
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/zenflow'
+const isProduction = process.env.NODE_ENV === 'production'
 
 // Fallback to file storage if MongoDB is not available
 const DATA_FILE = require('path').join(__dirname, 'data.json')
@@ -20,6 +21,10 @@ const metaSchema = new mongoose.Schema({ user: String, meta: mongoose.Schema.Typ
 let User, Log, Meta
 
 async function connectDb(){
+  if (isProduction && !process.env.MONGODB_URI) {
+    console.error('MONGODB_URI is required in production.')
+    process.exit(1)
+  }
   try{
     await mongoose.connect(MONGODB_URI, {useNewUrlParser:true, useUnifiedTopology:true})
     User = mongoose.model('User', userSchema)
@@ -28,6 +33,10 @@ async function connectDb(){
     console.log('Connected to MongoDB')
     useFileStorage = false
   }catch(err){
+    if (isProduction) {
+      console.error('MongoDB connection failed in production:', err.message)
+      process.exit(1)
+    }
     console.warn('MongoDB connection failed, falling back to file storage:', err.message)
     useFileStorage = true
     // ensure data file exists
