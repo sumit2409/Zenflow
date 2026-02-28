@@ -1063,6 +1063,24 @@ input[type='date'],
   gap: 18px;
 }
 
+.difficulty-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.difficulty-chip {
+  min-width: 78px;
+  text-transform: capitalize;
+}
+
+.difficulty-chip.active {
+  background: linear-gradient(135deg, rgba(125, 149, 119, 0.95), rgba(174, 131, 89, 0.95));
+  color: #fff9f2;
+  border-color: transparent;
+}
+
 .onboarding-card {
   padding: var(--space-5);
 }
@@ -1329,6 +1347,21 @@ input[type='date'],
 
 .reaction-stage.go {
   background: rgba(125, 149, 119, 0.24);
+}
+
+.game-result {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255, 247, 235, 0.85);
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+}
+
+.game-result.success {
+  background: rgba(220, 230, 217, 0.72);
+  color: #41543f;
+  border-color: rgba(125, 149, 119, 0.28);
 }
 
 @media (max-width: 1000px) {

@@ -55,6 +55,15 @@ export async function playEndChime() {
   await playSequence([523.25, 659.25, 783.99], { duration: 0.14, gap: 0.05, volume: 0.055, type: 'sine' })
 }
 
+export async function playVictoryFanfare() {
+  await playSequence([523.25, 659.25, 783.99, 1046.5], {
+    duration: 0.16,
+    gap: 0.04,
+    volume: 0.07,
+    type: 'triangle',
+  })
+}
+
 export type MeditationAmbience = {
   start: () => Promise<void>
   stop: () => void

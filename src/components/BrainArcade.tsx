@@ -1,28 +1,44 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { playEndChime, playStartChime } from '../utils/sound'
+import { playStartChime, playVictoryFanfare } from '../utils/sound'
 import { todayKey } from '../utils/wellness'
 import { type ProfileMeta } from '../utils/profile'
 
 type Props = { user: string | null; token?: string | null; onRequireLogin?: () => void }
 
 const cards = ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D']
+type MemoryLevel = 'easy' | 'medium' | 'hard'
+type ReactionLevel = 'easy' | 'medium' | 'hard'
+const reactionTargets: Record<ReactionLevel, number> = { easy: 550, medium: 420, hard: 320 }
 
-function shuffledDeck() {
-  return [...cards]
+function shuffledDeck(level: MemoryLevel) {
+  const source = level === 'easy' ? cards : level === 'medium' ? [...cards, 'E', 'E'] : [...cards, 'E', 'E', 'F', 'F']
+  return [...source]
     .map((value) => ({ value, sort: Math.random() }))
     .sort((a, b) => a.sort - b.sort)
     .map(({ value }) => value)
 }
 
 export default function BrainArcade({ user, token, onRequireLogin }: Props) {
-  const [deck, setDeck] = useState<string[]>(() => shuffledDeck())
+  const [memoryLevel, setMemoryLevel] = useState<MemoryLevel>('medium')
+  const [reactionLevel, setReactionLevel] = useState<ReactionLevel>('medium')
+  const [deck, setDeck] = useState<string[]>(() => shuffledDeck('medium'))
   const [flipped, setFlipped] = useState<number[]>([])
   const [matched, setMatched] = useState<number[]>([])
   const [moves, setMoves] = useState(0)
   const [reactionState, setReactionState] = useState<'idle' | 'waiting' | 'go'>('idle')
   const [reactionStart, setReactionStart] = useState(0)
   const [reactionMs, setReactionMs] = useState<number | null>(null)
+  const [memoryWinMessage, setMemoryWinMessage] = useState('')
+  const [reactionWinMessage, setReactionWinMessage] = useState('')
   const [meta, setMeta] = useState<ProfileMeta>({})
+
+  useEffect(() => {
+    setDeck(shuffledDeck(memoryLevel))
+    setFlipped([])
+    setMatched([])
+    setMoves(0)
+    setMemoryWinMessage('')
+  }, [memoryLevel])
 
   useEffect(() => {
     async function load() {
@@ -54,7 +70,8 @@ export default function BrainArcade({ user, token, onRequireLogin }: Props) {
 
   useEffect(() => {
     if (matched.length === deck.length && deck.length > 0) {
-      void playEndChime()
+      setMemoryWinMessage(`You won the ${memoryLevel} memory round.`)
+      void playVictoryFanfare()
       void logArcade('memory', 1)
       const best = meta.brainArcade?.memoryBestMoves
       if (!best || moves < best) {
@@ -96,10 +113,11 @@ export default function BrainArcade({ user, token, onRequireLogin }: Props) {
 
   function resetMemory() {
     void playStartChime()
-    setDeck(shuffledDeck())
+    setDeck(shuffledDeck(memoryLevel))
     setFlipped([])
     setMatched([])
     setMoves(0)
+    setMemoryWinMessage('')
   }
 
   function startReaction() {
@@ -122,8 +140,10 @@ export default function BrainArcade({ user, token, onRequireLogin }: Props) {
     const elapsed = Math.round(performance.now() - reactionStart)
     setReactionMs(elapsed)
     setReactionState('idle')
-    void playEndChime()
-    await logArcade('reaction', elapsed <= 450 ? 1 : 0)
+    const won = elapsed <= reactionTargets[reactionLevel]
+    setReactionWinMessage(won ? `You won the ${reactionLevel} reaction round in ${elapsed} ms.` : `Close. ${elapsed} ms is above the ${reactionTargets[reactionLevel]} ms target.`)
+    if (won) void playVictoryFanfare()
+    await logArcade('reaction', won ? 1 : 0)
     const best = meta.brainArcade?.reactionBestMs
     if (!best || elapsed < best) {
       void persistMeta({
@@ -149,6 +169,13 @@ export default function BrainArcade({ user, token, onRequireLogin }: Props) {
       <div className="arcade-layout">
         <section className="arcade-card card inset-card">
           <div className="section-kicker">Memory Match</div>
+          <div className="difficulty-switch" role="tablist" aria-label="Memory game difficulty">
+            {(['easy', 'medium', 'hard'] as MemoryLevel[]).map((level) => (
+              <button key={level} className={`difficulty-chip ${memoryLevel === level ? 'active' : ''}`} onClick={() => setMemoryLevel(level)}>
+                {level}
+              </button>
+            ))}
+          </div>
           <div className="memory-grid">
             {deck.map((card, index) => (
               <button key={`${card}-${index}`} className={`memory-card ${shownCards.has(index) ? 'revealed' : ''}`} onClick={() => flipCard(index)}>
@@ -173,13 +200,21 @@ export default function BrainArcade({ user, token, onRequireLogin }: Props) {
           <div className="controls">
             <button onClick={resetMemory}>Shuffle again</button>
           </div>
+          {memoryWinMessage && <div className={`game-result ${memoryDone ? 'success' : ''}`}>{memoryWinMessage}</div>}
         </section>
 
         <section className="arcade-card card inset-card">
           <div className="section-kicker">Reaction Reset</div>
+          <div className="difficulty-switch" role="tablist" aria-label="Reaction game difficulty">
+            {(['easy', 'medium', 'hard'] as ReactionLevel[]).map((level) => (
+              <button key={level} className={`difficulty-chip ${reactionLevel === level ? 'active' : ''}`} onClick={() => setReactionLevel(level)}>
+                {level}
+              </button>
+            ))}
+          </div>
           <div className={`reaction-stage ${reactionState}`}>
             <strong>{reactionState === 'go' ? 'Tap now' : reactionState === 'waiting' ? 'Wait for the signal' : 'Ready?'}</strong>
-            <span>{reactionMs ? `${reactionMs} ms` : 'Keep your mind alert, not frantic.'}</span>
+            <span>{reactionMs ? `${reactionMs} ms` : `Beat ${reactionTargets[reactionLevel]} ms to win.`}</span>
           </div>
           <div className="mini-stats">
             <div>
@@ -201,6 +236,7 @@ export default function BrainArcade({ user, token, onRequireLogin }: Props) {
             </button>
             {reactionState === 'waiting' && <button onClick={handleReactionTap}>Too soon</button>}
           </div>
+          {reactionWinMessage && <div className={`game-result ${reactionMs !== null && reactionMs <= reactionTargets[reactionLevel] ? 'success' : ''}`}>{reactionWinMessage}</div>}
         </section>
       </div>
     </div>

@@ -1,15 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { getDailyPuzzle, isCellLocked, isSolved, toGrid, updateGridValue } from '../utils/sudoku'
+import { getDailyPuzzle, isCellLocked, isSolved, toGrid, updateGridValue, type SudokuDifficulty } from '../utils/sudoku'
 import { todayKey } from '../utils/wellness'
-import { playEndChime, playStartChime } from '../utils/sound'
+import { playStartChime, playVictoryFanfare } from '../utils/sound'
 
 type Props = { user: string | null; token?: string | null; onRequireLogin?: () => void }
 
 export default function SudokuTrainer({ user, token, onRequireLogin }: Props) {
-  const puzzle = useMemo(() => getDailyPuzzle(), [])
-  const [grid, setGrid] = useState(() => toGrid(puzzle.puzzle))
+  const [difficulty, setDifficulty] = useState<SudokuDifficulty>('medium')
+  const puzzle = useMemo(() => getDailyPuzzle(difficulty), [difficulty])
+  const [grid, setGrid] = useState(() => toGrid(getDailyPuzzle('medium').puzzle))
   const [solved, setSolved] = useState(false)
   const [alreadyLogged, setAlreadyLogged] = useState(false)
+  const [winMessage, setWinMessage] = useState('')
+
+  useEffect(() => {
+    setGrid(toGrid(puzzle.puzzle))
+    setSolved(false)
+    setAlreadyLogged(false)
+    setWinMessage('')
+  }, [puzzle])
 
   useEffect(() => {
     async function load() {
@@ -21,17 +30,20 @@ export default function SudokuTrainer({ user, token, onRequireLogin }: Props) {
         const response = await fetch('/api/logs', { headers: { authorization: `Bearer ${token}` } })
         if (!response.ok) return
         const payload = await response.json()
-        const doneToday = (payload.logs || []).some((entry: any) => entry.date === todayKey() && entry.type === 'sudoku' && entry.value >= 1)
+        const doneToday = (payload.logs || []).some((entry: any) => entry.date === todayKey() && entry.type === `sudoku-${difficulty}` && entry.value >= 1)
         setAlreadyLogged(doneToday)
         setSolved(doneToday)
-        if (doneToday) setGrid(toGrid(puzzle.solution))
+        if (doneToday) {
+          setGrid(toGrid(puzzle.solution))
+          setWinMessage(`Already cleared today’s ${difficulty} grid.`)
+        }
       } catch (error) {
         console.error(error)
       }
     }
 
     void load()
-  }, [user, token])
+  }, [user, token, difficulty, puzzle.solution])
 
   async function persistSolve() {
     if (!user || !token) return onRequireLogin?.()
@@ -39,7 +51,7 @@ export default function SudokuTrainer({ user, token, onRequireLogin }: Props) {
       await fetch('/api/logs', {
         method: 'POST',
         headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
-        body: JSON.stringify({ date: todayKey(), type: 'sudoku', value: 1 }),
+        body: JSON.stringify({ date: todayKey(), type: `sudoku-${difficulty}`, value: 1 }),
       })
       setAlreadyLogged(true)
     } catch (error) {
@@ -56,7 +68,8 @@ export default function SudokuTrainer({ user, token, onRequireLogin }: Props) {
 
     if (isSolved(nextGrid, puzzle.solution)) {
       setSolved(true)
-      void playEndChime()
+      setWinMessage(`You won the ${difficulty} Sudoku.`)
+      void playVictoryFanfare()
       if (!alreadyLogged) void persistSolve()
     }
   }
@@ -65,6 +78,7 @@ export default function SudokuTrainer({ user, token, onRequireLogin }: Props) {
     void playStartChime()
     setGrid(toGrid(alreadyLogged ? puzzle.solution : puzzle.puzzle))
     setSolved(alreadyLogged)
+    if (!alreadyLogged) setWinMessage('')
   }
 
   return (
@@ -76,7 +90,19 @@ export default function SudokuTrainer({ user, token, onRequireLogin }: Props) {
       </div>
 
       <div className="sudoku-shell">
-        <div className="sudoku-board" role="grid" aria-label="Sudoku puzzle">
+        <div>
+          <div className="difficulty-switch" role="tablist" aria-label="Sudoku difficulty">
+            {(['easy', 'medium', 'hard'] as SudokuDifficulty[]).map((level) => (
+              <button
+                key={level}
+                className={`difficulty-chip ${difficulty === level ? 'active' : ''}`}
+                onClick={() => setDifficulty(level)}
+              >
+                {level}
+              </button>
+            ))}
+          </div>
+          <div className="sudoku-board" role="grid" aria-label={`Sudoku puzzle ${difficulty}`}>
           {grid.map((row, rowIndex) =>
             row.map((cell, colIndex) => (
               <input
@@ -91,15 +117,20 @@ export default function SudokuTrainer({ user, token, onRequireLogin }: Props) {
               />
             ))
           )}
+          </div>
         </div>
 
         <div className="sudoku-side card inset-card">
           <h3>Daily brain-sharpening ritual</h3>
-          <p className="muted">Complete one puzzle and your dashboard will count it toward today&apos;s reward cycle.</p>
+          <p className="muted">Complete one puzzle and your dashboard will count it toward today&apos;s reward cycle. Difficulty changes the challenge, not the clarity.</p>
           <div className="mini-stats sudoku-stats">
             <div>
               <strong>{solved ? 'Done' : 'Live'}</strong>
               <span>status</span>
+            </div>
+            <div>
+              <strong>{difficulty}</strong>
+              <span>level</span>
             </div>
             <div>
               <strong>+70</strong>
@@ -113,10 +144,15 @@ export default function SudokuTrainer({ user, token, onRequireLogin }: Props) {
           <div className="controls">
             <button onClick={resetPuzzle}>Reset board</button>
           </div>
+          {winMessage && (
+            <div className={`game-result ${solved ? 'success' : ''}`} role="status" aria-live="polite">
+              {winMessage}
+            </div>
+          )}
           {solved ? (
             <div className="empty-panel">
-              <h4>Mind ritual complete</h4>
-              <p>You solved today&apos;s puzzle. Let the reward system carry that momentum into the rest of the day.</p>
+              <h4>Puzzle cleared</h4>
+              <p>You solved today&apos;s {difficulty} grid. Let that clean win reset your attention before the next task.</p>
             </div>
           ) : (
             <div className="empty-panel">
