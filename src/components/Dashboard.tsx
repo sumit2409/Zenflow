@@ -22,8 +22,10 @@ import {
   getTotalPoints,
   todayKey,
   type LogEntry,
+  type WellnessMeta,
 } from '../utils/wellness'
 import { type ProfileMeta } from '../utils/profile'
+import OnboardingChecklist from './OnboardingChecklist'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -91,16 +93,19 @@ export default function Dashboard({ onSelect, user, token }: Props) {
   const [meta, setMeta] = useState<ProfileMeta>({})
   const [intentionDraft, setIntentionDraft] = useState('')
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       if (!user || !token) {
         setLogs([])
         setMeta({})
+        setIsLoading(false)
         return
       }
 
       try {
+        setIsLoading(true)
         const [logsRes, metaRes] = await Promise.all([
           fetch('/api/logs', { headers: { authorization: `Bearer ${token}` } }),
           fetch('/api/meta', { headers: { authorization: `Bearer ${token}` } }),
@@ -117,6 +122,8 @@ export default function Dashboard({ onSelect, user, token }: Props) {
         }
       } catch (error) {
         console.error(error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -190,6 +197,7 @@ export default function Dashboard({ onSelect, user, token }: Props) {
 
   return (
     <div className="dashboard sanctuary-shell">
+      {user && <OnboardingChecklist meta={meta} logs={logs} onSelect={onSelect} />}
       <section className="overview-grid">
         <article className="sanctuary-story card fade-rise">
           <div className="section-kicker">Sanctuary</div>
@@ -377,7 +385,14 @@ export default function Dashboard({ onSelect, user, token }: Props) {
               <span>{today.memory + today.reaction} game wins</span>
             </div>
           </div>
-          {user && logs.length > 0 ? (
+          {isLoading ? (
+            <div className="loading-panel" role="status" aria-live="polite">
+              <div className="skeleton-line wide" />
+              <div className="skeleton-line" />
+              <div className="skeleton-line" />
+              <span>Loading your sanctuary history...</span>
+            </div>
+          ) : user && logs.length > 0 ? (
             <div className="history-charts">
               <div className="chart-block">
                 <div className="chart-label">Focus</div>

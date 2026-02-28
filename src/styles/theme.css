@@ -4,6 +4,7 @@
   --bg-cream: #f3eadf;
   --bg-sand: #e6d5c0;
   --bg-clay: #c28a66;
+  --bg-mist: #fbf6ef;
   --ink: #2f241e;
   --ink-soft: #6f5d50;
   --sage: #7d9577;
@@ -14,6 +15,17 @@
   --card-strong: rgba(255, 251, 247, 0.9);
   --line: rgba(79, 58, 41, 0.12);
   --shadow: 0 22px 70px rgba(77, 49, 31, 0.12);
+  --radius-sm: 14px;
+  --radius-md: 22px;
+  --radius-lg: 30px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
 }
 
 * {
@@ -135,6 +147,7 @@ select {
 button {
   border: 1px solid rgba(79, 58, 41, 0.16);
   border-radius: 999px;
+  min-height: 44px;
   padding: 10px 14px;
   background: rgba(255, 250, 246, 0.8);
   color: var(--ink);
@@ -156,6 +169,24 @@ button:hover {
   border-color: rgba(125, 149, 119, 0.4);
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 12px 28px rgba(77, 49, 31, 0.08);
+}
+
+button:focus-visible,
+.nav-link:focus-visible,
+.login-btn:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(125, 149, 119, 0.65);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .auth {
@@ -245,6 +276,172 @@ button:hover {
 
 .hero {
   margin-bottom: 24px;
+}
+
+.marketing-hero {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.marketing-copy,
+.credibility-card,
+.start-card,
+.trust-card,
+.faq-card,
+.problem-card,
+.how-card,
+.onboarding-card {
+  padding: var(--space-6);
+}
+
+.hero-actions {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.primary-cta {
+  min-height: 52px;
+  width: fit-content;
+  padding-inline: 22px;
+  background: linear-gradient(135deg, rgba(125, 149, 119, 0.95), rgba(174, 131, 89, 0.95));
+  color: #fff9f2;
+  border-color: transparent;
+}
+
+.primary-cta:hover {
+  background: linear-gradient(135deg, rgba(111, 136, 103, 0.96), rgba(163, 119, 78, 0.96));
+}
+
+.cta-note {
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.credibility-grid,
+.trust-strip,
+.problem-grid,
+.how-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.credibility-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-block: var(--space-4);
+}
+
+.credibility-grid strong,
+.trust-metric strong,
+.how-card strong,
+.problem-card h3 {
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+.testimonial {
+  margin: 0;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--ink-soft);
+}
+
+.trust-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: var(--space-6);
+}
+
+.trust-metric {
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(255, 252, 249, 0.72);
+}
+
+.trust-metric strong {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 34px;
+}
+
+.marketing-section {
+  margin-bottom: var(--space-7);
+}
+
+.section-heading-block {
+  margin-bottom: var(--space-5);
+  max-width: 720px;
+}
+
+.section-heading-block h2 {
+  margin: 0 0 var(--space-3);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 5vw, 52px);
+}
+
+.problem-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.problem-card p,
+.how-card span,
+.start-card span,
+.faq-card p,
+.trust-card li {
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.how-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.start-card {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: var(--space-5);
+}
+
+.faq-list,
+.trust-list,
+.onboarding-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.trust-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-6) 0;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.footer-links a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .hero-inner {
@@ -866,6 +1063,82 @@ input[type='date'],
   gap: 18px;
 }
 
+.onboarding-card {
+  padding: var(--space-5);
+}
+
+.onboarding-list {
+  margin-top: var(--space-4);
+}
+
+.onboarding-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.onboarding-item.done {
+  background: rgba(220, 230, 217, 0.55);
+}
+
+.onboarding-item strong,
+.faq-card strong {
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+.onboarding-item span {
+  color: var(--ink-soft);
+}
+
+.loading-panel {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(215, 163, 109, 0.18), rgba(255, 255, 255, 0.72), rgba(215, 163, 109, 0.18));
+  background-size: 200% 100%;
+  animation: sheen 1.6s linear infinite;
+}
+
+.skeleton-line.wide {
+  width: 80%;
+}
+
+.form-feedback {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: rgba(125, 149, 119, 0.12);
+  color: var(--ink-soft);
+}
+
+.form-feedback.error {
+  background: rgba(194, 99, 84, 0.12);
+  color: #8a3f35;
+}
+
+.login-card p {
+  margin-top: 0;
+}
+
+.login-form label {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.login-switch {
+  margin-top: var(--space-3);
+}
+
 .sudoku-board {
   display: grid;
   grid-template-columns: repeat(9, minmax(0, 1fr));
@@ -1059,6 +1332,12 @@ input[type='date'],
 }
 
 @media (max-width: 1000px) {
+  .marketing-hero,
+  .faq-grid,
+  .problem-grid,
+  .how-grid,
+  .trust-strip,
+  .start-card,
   .hero-inner,
   .overview-grid,
   .quest-grid,
@@ -1078,6 +1357,10 @@ input[type='date'],
   .hero-copy h1 {
     max-width: 12ch;
   }
+
+  .credibility-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 720px) {
@@ -1086,6 +1369,14 @@ input[type='date'],
   }
 
   .app-header,
+  .marketing-copy,
+  .credibility-card,
+  .start-card,
+  .trust-card,
+  .faq-card,
+  .problem-card,
+  .how-card,
+  .onboarding-card,
   .hero-inner,
   .sanctuary-story,
   .level-card,
@@ -1191,9 +1482,16 @@ input[type='date'],
   }
 
   .ghost-btn,
-  .back {
+  .back,
+  .primary-cta {
     width: 100%;
     justify-content: center;
+  }
+
+  .site-footer,
+  .onboarding-item {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 

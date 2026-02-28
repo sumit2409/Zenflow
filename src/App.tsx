@@ -6,6 +6,7 @@ import Login from './components/Login'
 import SudokuTrainer from './components/SudokuTrainer'
 import ProfileCenter from './components/ProfileCenter'
 import BrainArcade from './components/BrainArcade'
+import MarketingLanding from './components/MarketingLanding'
 
 export default function App() {
   const [selected, setSelected] = useState<string | null>(null)
@@ -47,49 +48,55 @@ export default function App() {
       <main>
         {!selected ? (
           <>
-            <section className="hero fade-rise">
-              <div className="hero-inner">
-                <div className="hero-copy">
-                  <div className="eyebrow">Psychologically soothing wellness design</div>
-                  <h1>Build a day that feels quieter and more rewarding.</h1>
-                  <p className="lead">A ritual-first workspace inspired by calming wellness products and gentle progression systems, so your effort feels meaningful instead of mechanical.</p>
-                  <div className="hero-tags">
-                    <span>Sanctuary points</span>
-                    <span>Daily rituals</span>
-                    <span>Reward shelf</span>
+            {user ? (
+              <>
+                <section className="hero fade-rise">
+                  <div className="hero-inner">
+                    <div className="hero-copy">
+                      <div className="eyebrow">Psychologically soothing wellness design</div>
+                      <h1>Build a day that feels quieter and more rewarding.</h1>
+                      <p className="lead">A ritual-first workspace inspired by calming wellness products and gentle progression systems, so your effort feels meaningful instead of mechanical.</p>
+                      <div className="hero-tags">
+                        <span>Sanctuary points</span>
+                        <span>Daily rituals</span>
+                        <span>Reward shelf</span>
+                      </div>
+                    </div>
+                    <div className="hero-panel">
+                      <div className="hero-stat">
+                        <strong>01</strong>
+                        <span>Set an intention before the day speeds up.</span>
+                      </div>
+                      <div className="hero-stat">
+                        <strong>02</strong>
+                        <span>Complete focus, calm, and mind rituals for rewards.</span>
+                      </div>
+                      <div className="hero-stat">
+                        <strong>03</strong>
+                        <span>Watch points and streaks grow without aggressive pressure.</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="hero-panel">
-                  <div className="hero-stat">
-                    <strong>01</strong>
-                    <span>Set an intention before the day speeds up.</span>
-                  </div>
-                  <div className="hero-stat">
-                    <strong>02</strong>
-                    <span>Complete focus, calm, and motion rituals for rewards.</span>
-                  </div>
-                  <div className="hero-stat">
-                    <strong>03</strong>
-                    <span>Watch points and streaks grow without aggressive pressure.</span>
-                  </div>
-                </div>
-              </div>
-            </section>
-            <Dashboard onSelect={(id: string) => setView(id)} user={user} token={token} />
-            <section className="detail-strip fade-rise">
-              <article className="detail-card">
-                <h3>Ritual pacing</h3>
-                <p>Every tool is framed as a room, not a task list, so the UI feels restorative instead of punitive.</p>
-              </article>
-              <article className="detail-card">
-                <h3>Reward psychology</h3>
-                <p>Points, levels, streaks, and symbolic unlocks create momentum while keeping the emotional tone soft.</p>
-              </article>
-              <article className="detail-card">
-                <h3>Reflective design</h3>
-                <p>Intentions, calmer copy, and ambient visuals make the experience feel more like a retreat than a dashboard.</p>
-              </article>
-            </section>
+                </section>
+                <Dashboard onSelect={(id: string) => setView(id)} user={user} token={token} />
+                <section className="detail-strip fade-rise">
+                  <article className="detail-card">
+                    <h3>Ritual pacing</h3>
+                    <p>Every tool is framed as a room, not a task list, so the UI feels restorative instead of punitive.</p>
+                  </article>
+                  <article className="detail-card">
+                    <h3>Reward psychology</h3>
+                    <p>Points, levels, streaks, and symbolic unlocks create momentum while keeping the emotional tone soft.</p>
+                  </article>
+                  <article className="detail-card">
+                    <h3>Reflective design</h3>
+                    <p>Intentions, calmer copy, and ambient visuals make the experience feel more like a retreat than a dashboard.</p>
+                  </article>
+                </section>
+              </>
+            ) : (
+              <MarketingLanding onPrimaryCta={() => setShowLogin(true)} />
+            )}
           </>
         ) : (
           <section className="focus-card fade-rise">
